@@ -1,0 +1,12 @@
+*.log
+*.pot
+*.pyc
+__pycache__/
+.env
+.vscode/
+.idea/
+node_modules/
+build/
+dist/
+.DS_Store
+.vercel

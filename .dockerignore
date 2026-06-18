@@ -1,0 +1,9 @@
+docker-compose.yml
+__pycache__/
+*.pyc
+.env
+.git
+node_modules/
+build/
+.next/
+.vercel/
