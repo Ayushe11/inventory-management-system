@@ -1,0 +1,13 @@
+{
+  "$schema": "https://assets.railway.app/jsonschema/v0.0.29.json",
+  "build": {
+    "builder": "DOCKERFILE",
+    "context": "backend"
+  },
+  "deploy": {
+    "numReplicas": 1,
+    "startCommand": "python run.py",
+    "restartPolicyMaxRetries": 5,
+    "restartPolicyWindowMs": 60000
+  }
+}
