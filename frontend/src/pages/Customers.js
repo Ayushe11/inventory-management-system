@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Container, Table, Button, Alert, Row, Col } from 'react-bootstrap';
+import { Table } from 'react-bootstrap';
 import { fetchCustomers, deleteCustomer, resetSuccess } from '../redux/slices/customerSlice';
 import CustomerForm from './CustomerForm';
 
 export default function CustomerList() {
   const dispatch = useDispatch();
-  const { items, loading, error, success } = useSelector(state => state.customers);
+  const { items, loading, error, success } = useSelector((state) => state.customers);
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
@@ -27,22 +27,21 @@ export default function CustomerList() {
   };
 
   return (
-    <Container fluid className="py-4">
-      <Row className="mb-4">
-        <Col>
+    <div className="page-panel">
+      <div className="page-header">
+        <div>
           <h1>Customers</h1>
-        </Col>
-        <Col className="text-end">
-          <Button variant="primary" onClick={() => setShowForm(!showForm)}>
-            {showForm ? 'Cancel' : 'Add Customer'}
-          </Button>
-        </Col>
-      </Row>
+          <p className="page-subtitle">A premium customer hub with smooth interactions and clean row styling.</p>
+        </div>
+        <button className="btn-gradient" type="button" onClick={() => setShowForm(!showForm)}>
+          {showForm ? 'Cancel' : 'Add Customer'}
+        </button>
+      </div>
 
-      {error && <Alert variant="danger">{error}</Alert>}
+      {error && <div className="form-alert">{error}</div>}
 
       {showForm && (
-        <div className="card p-4 mb-4">
+        <div className="premium-panel">
           <CustomerForm onSuccess={() => setShowForm(false)} />
         </div>
       )}
@@ -50,10 +49,12 @@ export default function CustomerList() {
       {loading && <p>Loading...</p>}
 
       {items.length === 0 ? (
-        <Alert variant="info">No customers found. Create one to get started!</Alert>
+        <div className="premium-panel">
+          <p>No customers found. Create one to get started!</p>
+        </div>
       ) : (
-        <div className="table-responsive">
-          <Table striped bordered hover>
+        <div className="premium-panel table-responsive">
+          <Table className="premium-table">
             <thead>
               <tr>
                 <th>Name</th>
@@ -63,19 +64,15 @@ export default function CustomerList() {
               </tr>
             </thead>
             <tbody>
-              {items.map(customer => (
+              {items.map((customer) => (
                 <tr key={customer.id}>
                   <td>{customer.name}</td>
                   <td>{customer.email}</td>
                   <td>{customer.phone}</td>
                   <td>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => handleDelete(customer.id)}
-                    >
+                    <button className="btn-gradient" type="button" onClick={() => handleDelete(customer.id)}>
                       Delete
-                    </Button>
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -83,6 +80,6 @@ export default function CustomerList() {
           </Table>
         </div>
       )}
-    </Container>
+    </div>
   );
 }

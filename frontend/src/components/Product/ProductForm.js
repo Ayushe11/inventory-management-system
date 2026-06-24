@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Form, Button, Alert } from 'react-bootstrap';
 import { createProduct } from '../redux/slices/productSlice';
 
 export default function ProductForm({ onSuccess }) {
@@ -44,57 +43,65 @@ export default function ProductForm({ onSuccess }) {
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
-      {error && <Alert variant="danger">{error}</Alert>}
-      
-      <Form.Group className="mb-3">
-        <Form.Label>Product Name</Form.Label>
-        <Form.Control
+    <form onSubmit={handleSubmit}>
+      {error && <div className="form-alert">{error}</div>}
+
+      <div className="floating-field">
+        <input
+          className="floating-input"
           type="text"
           name="name"
           value={formData.name}
           onChange={handleChange}
+          placeholder=" "
           required
         />
-      </Form.Group>
+        <label>Product Name</label>
+      </div>
 
-      <Form.Group className="mb-3">
-        <Form.Label>SKU/Code</Form.Label>
-        <Form.Control
+      <div className="floating-field">
+        <input
+          className="floating-input"
           type="text"
           name="sku"
           value={formData.sku}
           onChange={handleChange}
+          placeholder=" "
           required
         />
-      </Form.Group>
+        <label>SKU/Code</label>
+      </div>
 
-      <Form.Group className="mb-3">
-        <Form.Label>Price</Form.Label>
-        <Form.Control
+      <div className="floating-field">
+        <input
+          className="floating-input"
           type="number"
           step="0.01"
           name="price"
           value={formData.price}
           onChange={handleChange}
+          placeholder=" "
           required
         />
-      </Form.Group>
+        <label>Price</label>
+      </div>
 
-      <Form.Group className="mb-3">
-        <Form.Label>Quantity</Form.Label>
-        <Form.Control
+      <div className="floating-field">
+        <input
+          className="floating-input"
           type="number"
           name="quantity"
           value={formData.quantity}
           onChange={handleChange}
+          placeholder=" "
           required
         />
-      </Form.Group>
+        <label>Quantity</label>
+      </div>
 
-      <Button variant="primary" type="submit" disabled={loading}>
+      <button className="btn-gradient" type="submit" disabled={loading}>
         {loading ? 'Creating...' : 'Create Product'}
-      </Button>
-    </Form>
+      </button>
+    </form>
   );
 }

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Container, Table, Button, Modal, Alert, Row, Col } from 'react-bootstrap';
-import { fetchProducts, deleteProduct, resetSuccess, resetError } from '../redux/slices/productSlice';
+import { Table, Alert } from 'react-bootstrap';
+import { fetchProducts, deleteProduct, resetSuccess } from '../redux/slices/productSlice';
 import ProductForm from './ProductForm';
 
 export default function ProductList() {
   const dispatch = useDispatch();
-  const { items, loading, error, success } = useSelector(state => state.products);
+  const { items, loading, error, success } = useSelector((state) => state.products);
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
@@ -27,22 +27,21 @@ export default function ProductList() {
   };
 
   return (
-    <Container fluid className="py-4">
-      <Row className="mb-4">
-        <Col>
+    <div className="page-panel">
+      <div className="page-header">
+        <div>
           <h1>Products</h1>
-        </Col>
-        <Col className="text-end">
-          <Button variant="primary" onClick={() => setShowForm(!showForm)}>
-            {showForm ? 'Cancel' : 'Add Product'}
-          </Button>
-        </Col>
-      </Row>
+          <p className="page-subtitle">A refined product catalog with immersive controls and crisp row interactions.</p>
+        </div>
+        <button className="btn-gradient" type="button" onClick={() => setShowForm(!showForm)}>
+          {showForm ? 'Cancel' : 'Add Product'}
+        </button>
+      </div>
 
-      {error && <Alert variant="danger">{error}</Alert>}
+      {error && <div className="form-alert">{error}</div>}
 
       {showForm && (
-        <div className="card p-4 mb-4">
+        <div className="premium-panel">
           <ProductForm onSuccess={() => setShowForm(false)} />
         </div>
       )}
@@ -50,10 +49,12 @@ export default function ProductList() {
       {loading && <p>Loading...</p>}
 
       {items.length === 0 ? (
-        <Alert variant="info">No products found. Create one to get started!</Alert>
+        <div className="premium-panel">
+          <p>No products found. Create one to get started!</p>
+        </div>
       ) : (
-        <div className="table-responsive">
-          <Table striped bordered hover>
+        <div className="premium-panel table-responsive">
+          <Table className="premium-table">
             <thead>
               <tr>
                 <th>Name</th>
@@ -64,20 +65,16 @@ export default function ProductList() {
               </tr>
             </thead>
             <tbody>
-              {items.map(product => (
+              {items.map((product) => (
                 <tr key={product.id}>
                   <td>{product.name}</td>
                   <td>{product.sku}</td>
                   <td>${product.price.toFixed(2)}</td>
                   <td>{product.quantity}</td>
                   <td>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => handleDelete(product.id)}
-                    >
+                    <button className="btn-gradient" type="button" onClick={() => handleDelete(product.id)}>
                       Delete
-                    </Button>
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -85,6 +82,6 @@ export default function ProductList() {
           </Table>
         </div>
       )}
-    </Container>
+    </div>
   );
 }

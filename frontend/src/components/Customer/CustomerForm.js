@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Form, Button, Alert } from 'react-bootstrap';
 import { createCustomer } from '../redux/slices/customerSlice';
 
 export default function CustomerForm({ onSuccess }) {
@@ -37,45 +36,51 @@ export default function CustomerForm({ onSuccess }) {
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
-      {error && <Alert variant="danger">{error}</Alert>}
-      
-      <Form.Group className="mb-3">
-        <Form.Label>Full Name</Form.Label>
-        <Form.Control
+    <form onSubmit={handleSubmit}>
+      {error && <div className="form-alert">{error}</div>}
+
+      <div className="floating-field">
+        <input
+          className="floating-input"
           type="text"
           name="name"
           value={formData.name}
           onChange={handleChange}
+          placeholder=" "
           required
         />
-      </Form.Group>
+        <label>Full Name</label>
+      </div>
 
-      <Form.Group className="mb-3">
-        <Form.Label>Email</Form.Label>
-        <Form.Control
+      <div className="floating-field">
+        <input
+          className="floating-input"
           type="email"
           name="email"
           value={formData.email}
           onChange={handleChange}
+          placeholder=" "
           required
         />
-      </Form.Group>
+        <label>Email</label>
+      </div>
 
-      <Form.Group className="mb-3">
-        <Form.Label>Phone</Form.Label>
-        <Form.Control
+      <div className="floating-field">
+        <input
+          className="floating-input"
           type="tel"
           name="phone"
           value={formData.phone}
           onChange={handleChange}
+          placeholder=" "
           required
         />
-      </Form.Group>
+        <label>Phone</label>
+      </div>
 
-      <Button variant="primary" type="submit" disabled={loading}>
+      <button className="btn-gradient" type="submit" disabled={loading}>
         {loading ? 'Creating...' : 'Create Customer'}
-      </Button>
-    </Form>
+      </button>
+    </form>
   );
 }

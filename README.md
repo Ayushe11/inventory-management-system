@@ -107,6 +107,10 @@ docker-compose up -d
 docker-compose exec backend python -c "from app import create_app; app = create_app(); app.app_context().push()"
 ```
 
+> The backend includes sample inventory, customer, and order seed data when the database is empty, so the UI will look populated on first startup.
+>
+> To reset seeded data, remove the database file or drop/recreate the database before starting again.
+
 5. Access the application:
    - Frontend: http://localhost:3000
    - Backend API: http://localhost:5000/api

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Container, Table, Button, Alert, Row, Col, Badge } from 'react-bootstrap';
+import { Table } from 'react-bootstrap';
 import { fetchOrders, deleteOrder, resetSuccess } from '../redux/slices/orderSlice';
 import { fetchCustomers } from '../redux/slices/customerSlice';
 import OrderForm from './OrderForm';
 
 export default function OrderList() {
   const dispatch = useDispatch();
-  const { items, loading, error, success } = useSelector(state => state.orders);
-  const { items: customers } = useSelector(state => state.customers);
+  const { items, loading, error, success } = useSelector((state) => state.orders);
+  const { items: customers } = useSelector((state) => state.customers);
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
@@ -31,36 +31,39 @@ export default function OrderList() {
   };
 
   const getCustomerName = (customerId) => {
-    const customer = customers.find(c => c.id === customerId);
+    const customer = customers.find((c) => c.id === customerId);
     return customer ? customer.name : 'Unknown';
   };
 
-  const getStatusBadge = (status) => {
-    const variants = {
-      pending: 'warning',
-      completed: 'success',
-      cancelled: 'danger'
-    };
-    return <Badge bg={variants[status] || 'secondary'}>{status}</Badge>;
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case 'completed':
+        return 'Completed';
+      case 'pending':
+        return 'Pending';
+      case 'cancelled':
+        return 'Cancelled';
+      default:
+        return 'Unknown';
+    }
   };
 
   return (
-    <Container fluid className="py-4">
-      <Row className="mb-4">
-        <Col>
+    <div className="page-panel">
+      <div className="page-header">
+        <div>
           <h1>Orders</h1>
-        </Col>
-        <Col className="text-end">
-          <Button variant="primary" onClick={() => setShowForm(!showForm)}>
-            {showForm ? 'Cancel' : 'Create Order'}
-          </Button>
-        </Col>
-      </Row>
+          <p className="page-subtitle">Order flows with polished rows, status clarity, and premium controls.</p>
+        </div>
+        <button className="btn-gradient" type="button" onClick={() => setShowForm(!showForm)}>
+          {showForm ? 'Cancel' : 'Create Order'}
+        </button>
+      </div>
 
-      {error && <Alert variant="danger">{error}</Alert>}
+      {error && <div className="form-alert">{error}</div>}
 
       {showForm && (
-        <div className="card p-4 mb-4">
+        <div className="premium-panel">
           <OrderForm onSuccess={() => setShowForm(false)} />
         </div>
       )}
@@ -68,10 +71,12 @@ export default function OrderList() {
       {loading && <p>Loading...</p>}
 
       {items.length === 0 ? (
-        <Alert variant="info">No orders found. Create one to get started!</Alert>
+        <div className="premium-panel">
+          <p>No orders found. Create one to get started!</p>
+        </div>
       ) : (
-        <div className="table-responsive">
-          <Table striped bordered hover>
+        <div className="premium-panel table-responsive">
+          <Table className="premium-table">
             <thead>
               <tr>
                 <th>Order ID</th>
@@ -84,22 +89,18 @@ export default function OrderList() {
               </tr>
             </thead>
             <tbody>
-              {items.map(order => (
+              {items.map((order) => (
                 <tr key={order.id}>
                   <td>#{order.id}</td>
                   <td>{getCustomerName(order.customer_id)}</td>
                   <td>{order.items ? order.items.length : 0}</td>
                   <td>${order.total_amount.toFixed(2)}</td>
-                  <td>{getStatusBadge(order.status)}</td>
+                  <td>{getStatusLabel(order.status)}</td>
                   <td>{new Date(order.created_at).toLocaleDateString()}</td>
                   <td>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => handleDelete(order.id)}
-                    >
+                    <button className="btn-gradient" type="button" onClick={() => handleDelete(order.id)}>
                       Delete
-                    </Button>
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -107,6 +108,6 @@ export default function OrderList() {
           </Table>
         </div>
       )}
-    </Container>
+    </div>
   );
 }

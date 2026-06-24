@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Form, Button, Alert, Table, Row, Col, Container } from 'react-bootstrap';
-import { fetchProducts, fetchProducts as getProducts } from '../redux/slices/productSlice';
-import { fetchCustomers, fetchCustomers as getCustomers } from '../redux/slices/customerSlice';
 import { createOrder } from '../redux/slices/orderSlice';
+import { fetchProducts } from '../redux/slices/productSlice';
+import { fetchCustomers } from '../redux/slices/customerSlice';
 
 export default function OrderForm({ onSuccess }) {
   const dispatch = useDispatch();
-  const { items: products } = useSelector(state => state.products);
-  const { items: customers } = useSelector(state => state.customers);
-  
+  const { items: products } = useSelector((state) => state.products);
+  const { items: customers } = useSelector((state) => state.customers);
+
   const [customerId, setCustomerId] = useState('');
   const [items, setItems] = useState([{ productId: '', quantity: 1 }]);
   const [error, setError] = useState('');
@@ -21,17 +20,19 @@ export default function OrderForm({ onSuccess }) {
   }, [dispatch]);
 
   const addItem = () => {
-    setItems([...items, { productId: '', quantity: 1 }]);
+    setItems((current) => [...current, { productId: '', quantity: 1 }]);
   };
 
   const removeItem = (index) => {
-    setItems(items.filter((_, i) => i !== index));
+    setItems((current) => current.filter((_, i) => i !== index));
   };
 
   const updateItem = (index, field, value) => {
-    const newItems = [...items];
-    newItems[index][field] = value;
-    setItems(newItems);
+    setItems((current) => {
+      const next = [...current];
+      next[index] = { ...next[index], [field]: value };
+      return next;
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -43,13 +44,13 @@ export default function OrderForm({ onSuccess }) {
       if (!customerId) throw new Error('Please select a customer');
       if (items.length === 0) throw new Error('Please add at least one item');
 
-      const orderItems = items.map(item => ({
-        product_id: parseInt(item.productId),
-        quantity: parseInt(item.quantity)
+      const orderItems = items.map((item) => ({
+        product_id: parseInt(item.productId, 10),
+        quantity: parseInt(item.quantity, 10)
       }));
 
       await dispatch(createOrder({
-        customer_id: parseInt(customerId),
+        customer_id: parseInt(customerId, 10),
         items: orderItems
       })).unwrap();
 
@@ -64,58 +65,59 @@ export default function OrderForm({ onSuccess }) {
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
-      {error && <Alert variant="danger">{error}</Alert>}
-      
-      <Form.Group className="mb-3">
-        <Form.Label>Customer</Form.Label>
-        <Form.Select
+    <form onSubmit={handleSubmit}>
+      {error && <div className="form-alert">{error}</div>}
+
+      <div className="floating-field">
+        <select
+          className="floating-select"
           value={customerId}
           onChange={(e) => setCustomerId(e.target.value)}
           required
         >
           <option value="">Select a customer...</option>
-          {customers.map(c => (
-            <option key={c.id} value={c.id}>{c.name} ({c.email})</option>
+          {customers.map((c) => (
+            <option key={c.id} value={c.id}>{`${c.name} (${c.email})`}</option>
           ))}
-        </Form.Select>
-      </Form.Group>
+        </select>
+        <label>Customer</label>
+      </div>
 
-      <h5>Order Items</h5>
-      <div className="table-responsive mb-3">
-        <Table bordered>
+      <h3 style={{ color: '#f3f7ff', marginBottom: '16px' }}>Order Items</h3>
+      <div className="premium-panel table-responsive">
+        <table className="premium-table" style={{ minWidth: '760px' }}>
           <thead>
             <tr>
               <th>Product</th>
-              <th style={{ width: '150px' }}>Quantity</th>
-              <th style={{ width: '100px' }}>Price</th>
-              <th style={{ width: '100px' }}>Subtotal</th>
-              <th style={{ width: '80px' }}>Action</th>
+              <th>Quantity</th>
+              <th>Price</th>
+              <th>Subtotal</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {items.map((item, index) => {
-              const product = products.find(p => p.id === parseInt(item.productId));
+              const product = products.find((p) => p.id === parseInt(item.productId, 10));
               const subtotal = product ? product.price * item.quantity : 0;
-              
+
               return (
                 <tr key={index}>
                   <td>
-                    <Form.Select
+                    <select
+                      className="floating-select"
                       value={item.productId}
                       onChange={(e) => updateItem(index, 'productId', e.target.value)}
                       required
                     >
                       <option value="">Select...</option>
-                      {products.map(p => (
-                        <option key={p.id} value={p.id}>
-                          {p.name} (Stock: {p.quantity})
-                        </option>
+                      {products.map((p) => (
+                        <option key={p.id} value={p.id}>{`${p.name} (Stock: ${p.quantity})`}</option>
                       ))}
-                    </Form.Select>
+                    </select>
                   </td>
                   <td>
-                    <Form.Control
+                    <input
+                      className="floating-input"
                       type="number"
                       min="1"
                       value={item.quantity}
@@ -126,30 +128,25 @@ export default function OrderForm({ onSuccess }) {
                   <td>${product ? product.price.toFixed(2) : '0.00'}</td>
                   <td>${subtotal.toFixed(2)}</td>
                   <td>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => removeItem(index)}
-                    >
+                    <button className="btn-gradient" type="button" onClick={() => removeItem(index)}>
                       Remove
-                    </Button>
+                    </button>
                   </td>
                 </tr>
               );
             })}
           </tbody>
-        </Table>
+        </table>
       </div>
 
-      <Button variant="secondary" onClick={addItem} className="me-2 mb-3">
-        Add Item
-      </Button>
-
-      <div>
-        <Button variant="primary" type="submit" disabled={loading}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', marginTop: '20px' }}>
+        <button type="button" className="btn-gradient" onClick={addItem}>
+          Add Item
+        </button>
+        <button type="submit" className="btn-gradient" disabled={loading}>
           {loading ? 'Creating Order...' : 'Create Order'}
-        </Button>
+        </button>
       </div>
-    </Form>
+    </form>
   );
 }
